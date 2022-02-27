@@ -5,6 +5,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 from urllib.parse import urlparse
 import requests
+import MerkleTree
 
 class Blockchain(object):
     
@@ -20,6 +21,7 @@ class Blockchain(object):
         block = {
             'index': len(self.chain)+1,
             'timestamp': time(),
+            'merkleRoot': MerkleTree.merkleTree(self.current_transactions).hash,
             'transactions': self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1])
@@ -141,6 +143,7 @@ def mine():
         "transaction":block['transactions'],
         "proof":block['proof'],
         "previous_hash":block['previous_hash'],
+        "merkle root":block['merkleRoot'],
     }
 
     return jsonify(response), 200

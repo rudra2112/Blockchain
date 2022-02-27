@@ -1,4 +1,4 @@
-from Cryptodome.Hash import SHA256
+import hashlib
 import json
 import math
 
@@ -22,7 +22,7 @@ class Node(object):
         Returns a Node object with SHA256 hash of the string"""
 
         to_hash = string.encode()
-        hash = SHA256.new(to_hash).hexdigest()
+        hash = hashlib.sha256(to_hash).hexdigest()
         return Node(hash=hash, key=key)
 
     @staticmethod
@@ -67,7 +67,7 @@ class Leaf(object):
 
         i = 1
         for x in transactions:
-            hashed_trans = SHA256.new(json.dumps(x).encode()).hexdigest()
+            hashed_trans = hashlib.sha256(json.dumps(x).encode()).hexdigest()
             node = Leaf(transaction=x, hash=hashed_trans, key=str(i))
             leaves.append(node)
             i += 1
@@ -114,21 +114,25 @@ def merkleTree(transactions: list) -> Node:
     
     It takes a list of transactions and returns a single Node object"""
 
+    if(len(transactions)==0):
+        return Node("No Transactions", -1)
+
     leaves = Leaf.makeLeaves(transactions)
     full_set_of_leaves = Leaf.fill_set(leaves)
     root = Node.buildTree(full_set_of_leaves)
 
     return root
 
-transaction = [{
-    "sender": "anjne",
-    "receiver": "aknkconeoi",
-    "amount": 8
-},
-{
-    "sender": "anjne",
-    "receiver": "aknkconeoi",
-    "amount": 8
-}]
+# transaction = [{
+#     "sender": "anjne",
+#     "receiver": "aknkconeoi",
+#     "amount": 8
+# },
+# {
+#     "sender": "anjne",
+#     "receiver": "aknkconeoi",
+#     "amount": 8
+# }]
 
-root = merkleTree(transaction)
+# root = merkleTree(transaction)
+# print(root.hash)
